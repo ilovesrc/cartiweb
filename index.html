@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+            text-transform: lowercase;
+        }
+        
+        body {
+            background-color: #111;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .pc {
+            width: 380px;
+            height: 520px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+        
+        .ci {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .cf {
+            width: 100%;
+            height: 100%;
+            background: rgba(25, 25, 30, 0.6);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+        }
+        
+        .cb {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 32px;
+            border: 2px solid transparent;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.05) 25%, 
+                rgba(255, 255, 255, 0) 50%, 
+                rgba(255, 255, 255, 0.05) 75%, 
+                rgba(255, 255, 255, 0.1) 100%) border-box;
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .cc {
+            padding: 40px 30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            transform-style: preserve-3d;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ph {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            transform: translateZ(40px);
+        }
+        
+        .pi {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pi::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 60%;
+            background-color: #333;
+            transform: rotate(45deg);
+        }
+        
+        .pt {
+            margin-left: 20px;
+            text-align: left;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .st {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #aaa;
+        }
+        
+        .cd {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            margin: 30px 0;
+            transform: translateZ(20px);
+        }
+        
+        .sc {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateZ(30px);
+        }
+        
+        .si {
+            text-align: center;
+        }
+        
+        .sv {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .sl {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: lowercase;
+            letter-spacing: 1px;
+        }
+        
+        .bc {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transform: translateZ(35px);
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent
+            );
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .sl {
+            position: absolute;
+            bottom: 40px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transform: translateZ(25px);
+        }
+        
+        .si {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .si:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 30px;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .fe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .el {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            transform: translateZ(15px);
+        }
+        
+        .e1 {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+        }
+        
+        .e2 {
+            width: 60px;
+            height: 60px;
+            bottom: 30%;
+            right: 15%;
+        }
+        
+        .e3 {
+            width: 40px;
+            height: 40px;
+            top: 60%;
+            left: 20%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg"></canvas>
+    
+    <div class="pc" id="pc">
+        <div class="ci">
+            <div class="cf">
+                <div class="cb"></div>
+                <div class="cs"></div>
+                
+                <div class="fe">
+                    <div class="el e1"></div>
+                    <div class="el e2"></div>
+                    <div class="el e3"></div>
+                </div>
+                
+                <div class="cc">
+                    <div class="ph">
+                        <div class="pt">
+                            <h1>carti</h1>
+                            <p class="st">a discord bot that makes your life easier</p>
+                        </div>
+                    </div>
+                    
+                    <div class="cd"></div>
+                    
+                    <div class="bc">
+                        <a href="https://discord.com/oauth2/authorize?client_id=1361764359579111444" target="_blank" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            add to discord
+                        </a>
+                        
+                        <a href="/status" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            status
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    
+    <script>
+        VanillaTilt.init(document.getElementById("pc"), {
+            max: 10,
+            speed: 400,
+            glare: false,
+            "max-glare": 0.2,
+            gyroscope: true,
+            scale: 1.03
+        });
+        
+        const c = document.getElementById('bg');
+        
+        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        
+        function rs() {
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            gl.viewport(0, 0, c.width, c.height);
+        }
+        
+        rs();
+        window.addEventListener('resize', rs);
+        
+        const vs = `
+            attribute vec2 a;
+            varying vec2 v;
+            
+            void main() {
+                gl_Position = vec4(a, 0.0, 1.0);
+                v = a * 0.5 + 0.5;
+            }
+        `;
+        
+        const fs = `
+            precision mediump float;
+            varying vec2 v;
+            uniform float t;
+            uniform vec2 r;
+            
+            vec3 p(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+            
+            float n(vec2 v) {
+                const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                        -0.577350269189626, 0.024390243902439);
+                vec2 i  = floor(v + dot(v, C.yy));
+                vec2 x0 = v -   i + dot(i, C.xx);
+                vec2 i1;
+                i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                vec4 x12 = x0.xyxy + C.xxzz;
+                x12.xy -= i1;
+                i = mod(i, 289.0);
+                vec3 p = p( p( i.y + vec3(0.0, i1.y, 1.0 ))
+                + i.x + vec3(0.0, i1.x, 1.0 ));
+                vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+                    dot(x12.zw,x12.zw)), 0.0);
+                m = m*m;
+                m = m*m;
+                vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                vec3 h = abs(x) - 0.5;
+                vec3 ox = floor(x + 0.5);
+                vec3 a0 = x - ox;
+                m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+                vec3 g;
+                g.x  = a0.x  * x0.x  + h.x  * x0.y;
+                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                return 130.0 * dot(m, g);
+            }
+            
+            void main() {
+                vec2 uv = v;
+                vec2 rt = vec2(r.x / r.y, 1.0);
+                uv = uv * rt;
+                
+                float s = 0.05;
+                
+                float n1 = n(uv * 1.5 + vec2(t * s, t * s * 0.5)) * 0.5 + 0.5;
+                
+                float n2 = n(uv * 3.0 - vec2(t * s * 0.7, t * s * 0.3)) * 0.25 + 0.25;
+                
+                float n3 = n(uv * 5.0 + vec2(t * s * 0.2, -t * s * 0.4)) * 0.15 + 0.15;
+                
+                float n4 = n(uv * 0.6 - vec2(t * s * 0.1, t * s * 0.05)) * 0.3;
+                
+                float fn = n1 + n2 + n3 + n4;
+                fn = fn * 0.5;
+                
+                vec3 c1 = vec3(0.12, 0.12, 0.15);
+                vec3 c2 = vec3(0.18, 0.18, 0.21);
+                vec3 c3 = vec3(0.15, 0.15, 0.18);
+                
+                vec3 mc;
+                if (fn < 0.4) {
+                    mc = mix(c1, c3, fn / 0.4);
+                } else {
+                    mc = mix(c3, c2, (fn - 0.4) / 0.6);
+                }
+                
+                float vg = 1.0 - length((v - 0.5) * 1.5);
+                vg = smoothstep(0.0, 0.8, vg);
+                mc *= vg * 1.2;
+                
+                float hl = 1.0 - length((v - 0.5) * 2.0);
+                hl = smoothstep(0.4, 0.8, hl) * 0.2;
+                mc += hl;
+                
+                gl_FragColor = vec4(mc, 1.0);
+            }
+        `;
+        
+        function is(gl, vs, fs) {
+            const vsh = ls(gl, gl.VERTEX_SHADER, vs);
+            const fsh = ls(gl, gl.FRAGMENT_SHADER, fs);
+            
+            const sp = gl.createProgram();
+            gl.attachShader(sp, vsh);
+            gl.attachShader(sp, fsh);
+            gl.linkProgram(sp);
+            
+            return sp;
+        }
+        
+        function ls(gl, type, src) {
+            const s = gl.createShader(type);
+            
+            gl.shaderSource(s, src);
+            gl.compileShader(s);
+            
+            return s;
+        }
+        
+        const sp = is(gl, vs, fs);
+        
+        const pi = {
+            p: sp,
+            al: {
+                a: gl.getAttribLocation(sp, 'a'),
+            },
+            ul: {
+                t: gl.getUniformLocation(sp, 't'),
+                r: gl.getUniformLocation(sp, 'r'),
+            },
+        };
+        
+        const pb = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+        
+        const ps = [
+            -1.0, -1.0,
+             1.0, -1.0,
+            -1.0,  1.0,
+             1.0,  1.0,
+        ];
+        
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ps), gl.STATIC_DRAW);
+        
+        let st = Date.now();
+        
+        function rn() {
+            const ct = Date.now();
+            const et = (ct - st) / 1000;
+            
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+            gl.vertexAttribPointer(
+                pi.al.a,
+                2,
+                gl.FLOAT,
+                false,
+                0,
+                0
+            );
+            gl.enableVertexAttribArray(pi.al.a);
+            
+            gl.useProgram(pi.p);
+            
+            gl.uniform1f(pi.ul.t, et);
+            gl.uniform2f(pi.ul.r, c.width, c.height);
+            
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            
+            requestAnimationFrame(rn);
+        }
+        
+        rn();
+    </script>
+</body>
+</html>
